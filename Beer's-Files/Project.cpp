@@ -52,4 +52,3 @@ protected:
 public:
     void show_actions(){}
 };
-
