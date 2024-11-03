@@ -27,6 +27,26 @@ protected:
     string branch;
     string password;
 public:
+    static bool login(const string& rollNumber, const string& password) {
+        ifstream file("students.txt");
+        if (!file.is_open()) {
+            cerr << "Could not open the file!" << endl;
+            return false;
+        }
+        string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string storedRollNo, storedPassword;
+            getline(ss, storedRollNo, ',');
+            getline(ss, storedPassword);
+            if (storedRollNo == rollNumber && storedPassword == password) {
+                file.close();
+                return true;
+            }
+        }
+        file.close();
+        return false;
+    }
     void show_actions(){}
 };
 
