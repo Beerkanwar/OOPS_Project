@@ -27,7 +27,7 @@ protected:
     string branch;
     string password;
 public:
-    static bool login(const string& rollNumber, const string& password) {
+    bool login(const string& rollNumber, const string& password) {
         ifstream file("students.txt");
         if (!file.is_open()) {
             cerr << "Could not open the file!" << endl;
@@ -36,10 +36,21 @@ public:
         string line;
         while (getline(file, line)) {
             stringstream ss(line);
-            string storedRollNo, storedPassword;
-            getline(ss, storedRollNo, ',');
-            getline(ss, storedPassword);
-            if (storedRollNo == rollNumber && storedPassword == password) {
+            string storedName, storedEmail, storedGender, storedStudentID, storedPassword, storedBranch, storedSem;
+            getline(ss, storedName, ',');
+            getline(ss, storedEmail, ',');
+            getline(ss, storedGender, ',');
+            getline(ss, storedStudentID, ',');
+            getline(ss, storedPassword, ',');
+            getline(ss, storedBranch);
+            if (storedStudentID == roll_no && storedPassword == password) {
+                this->name = storedName;
+                this->email = storedEmail;
+                this->Gender = storedGender[0];
+                this->roll_no = storedStudentID;
+                this->password = storedPassword;
+                this->branch = storedBranch;
+                this->sem = stoi(storedSem);
                 file.close();
                 return true;
             }
@@ -59,6 +70,36 @@ protected:
     string dept;
 
 public:
+    bool login(const string& empID, const string& password) {
+        ifstream file("teachers.txt");
+        if (!file.is_open()) {
+            cerr << "Could not open the file!" << endl;
+            return false;
+        }
+        string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string storedName, storedEmail, storedGender, storedEmpID, storedPassword, storedDept;
+            getline(ss, storedName, ',');
+            getline(ss, storedEmail, ',');
+            getline(ss, storedGender, ',');
+            getline(ss, storedEmpID, ',');
+            getline(ss, storedPassword, ',');
+            getline(ss, storedDept);
+            if (storedEmpID == empID && storedPassword == password) {
+                this->name = storedName;
+                this->email = storedEmail;
+                this->Gender = storedGender[0];
+                this->emp_id = storedEmpID;
+                this->password = storedPassword;
+                this->dept = storedDept;
+                file.close();
+                return true;
+            }
+        }
+        file.close();
+        return false;
+    }
     void show_actions(){}
 };
 
@@ -100,6 +141,13 @@ public:
         }
         file.close();
         return a;
+    }
+    bool check_password(const string& password) const {
+        if(this->password.empty()) {
+            cerr << "Error: No password stored." << endl;
+            return false;
+        }
+        return this->password == password;
     }
     void show_actions(){}
 };
