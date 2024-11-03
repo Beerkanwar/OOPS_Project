@@ -70,5 +70,36 @@ protected:
     string password;
     string post;
 public:
+    static authority search(const string& employeeID) {
+        ifstream file("authority.txt");
+        authority a;
+        if (!file.is_open()) {
+            cerr << "Could not open the file!" << endl;
+            return a;
+        }
+        string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string storedName, storedEmail, storedGender, storedEmpID, storedPassword, storedPost;
+            getline(ss, storedName, ',');
+            getline(ss, storedEmail, ',');
+            getline(ss, storedGender, ',');
+            getline(ss, storedEmpID, ',');
+            getline(ss, storedPassword, ',');
+            getline(ss, storedPost);
+            if (storedEmpID == employeeID) {
+                a.name = storedName;
+                a.email = storedEmail;
+                a.Gender = storedGender[0];
+                a.emp_id = storedEmpID;
+                a.password = storedPassword;
+                a.post = storedPost;
+                file.close();
+                return a;
+            }
+        }
+        file.close();
+        return a;
+    }
     void show_actions(){}
 };
