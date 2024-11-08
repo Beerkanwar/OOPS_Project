@@ -1,10 +1,5 @@
 #include <bits/stdc++.h>
 #include<ctime>
-// #include<stdint.h>
-// #include <C:\Program Files\MySQL\MySQL Connector C++ 9.1\include\jdbc\mysql_driver.h>
-// #include <C:\Program Files\MySQL\MySQL Connector C++ 9.1\include\jdbc\mysql_connection.h>
-// #include <C:\Program Files\MySQL\MySQL Connector C++ 9.1\include\jdbc\cppconn\statement.h>
-// #include <C:\Program Files\MySQL\MySQL Connector C++ 9.1\include\jdbc\cppconn\resultset.h>
 #include<fstream>
 #include<ctime>
 #include<iomanip>
@@ -104,11 +99,9 @@ public:
 };
 
 
-class authority : public person
+class authority : public teacher
 {
 protected:
-    string emp_id;
-    string password;
     string post;
 public:
     static authority search(const string& employeeID) {
