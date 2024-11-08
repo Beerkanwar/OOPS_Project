@@ -12,6 +12,8 @@ protected:
     string name;
     string email;
     char Gender;
+public:
+    virtual bool login(const string& ID, const string& password) = 0;
 };
 
 class student : public person
