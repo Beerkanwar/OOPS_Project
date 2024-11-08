@@ -18,8 +18,7 @@ class student : public person
 {
 protected:
     string roll_no;
-    int std;
-    string section;
+    string std;
     string password;
 public:
     bool login(const string& rollNumber, const string& password) {
@@ -31,21 +30,19 @@ public:
         string line;
         while (getline(file, line)) {
             stringstream ss(line);
-            string storedName, storedEmail, storedGender, storedStudentID, storedPassword, storedsection, storedstd;
+            string storedName, storedEmail, storedGender, storedStudentID, storedPassword, storedstd;
             getline(ss, storedName, ',');
             getline(ss, storedEmail, ',');
             getline(ss, storedGender, ',');
             getline(ss, storedStudentID, ',');
-            getline(ss, storedPassword, ',');
-            getline(ss, storedsection);
+            getline(ss, storedPassword);
             if (storedStudentID == roll_no && storedPassword == password) {
                 this->name = storedName;
                 this->email = storedEmail;
                 this->Gender = storedGender[0];
                 this->roll_no = storedStudentID;
                 this->password = storedPassword;
-                this->section = storedsection;
-                this->std = stoi(storedstd);
+                this->std = storedstd;
                 file.close();
                 return true;
             }
@@ -54,6 +51,7 @@ public:
         return false;
     }
     void show_actions(){}
+    friend class authority;
 };
 
 
