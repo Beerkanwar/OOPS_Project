@@ -23,8 +23,8 @@ class student : public person
 {
 protected:
     string roll_no;
-    int sem;
-    string branch;
+    int std;
+    string section;
     string password;
 public:
     bool login(const string& rollNumber, const string& password) {
@@ -36,21 +36,21 @@ public:
         string line;
         while (getline(file, line)) {
             stringstream ss(line);
-            string storedName, storedEmail, storedGender, storedStudentID, storedPassword, storedBranch, storedSem;
+            string storedName, storedEmail, storedGender, storedStudentID, storedPassword, storedsection, storedstd;
             getline(ss, storedName, ',');
             getline(ss, storedEmail, ',');
             getline(ss, storedGender, ',');
             getline(ss, storedStudentID, ',');
             getline(ss, storedPassword, ',');
-            getline(ss, storedBranch);
+            getline(ss, storedsection);
             if (storedStudentID == roll_no && storedPassword == password) {
                 this->name = storedName;
                 this->email = storedEmail;
                 this->Gender = storedGender[0];
                 this->roll_no = storedStudentID;
                 this->password = storedPassword;
-                this->branch = storedBranch;
-                this->sem = stoi(storedSem);
+                this->section = storedsection;
+                this->std = stoi(storedstd);
                 file.close();
                 return true;
             }
