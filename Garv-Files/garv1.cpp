@@ -195,9 +195,9 @@ public:
             stringstream ss(line);
             string storedName, storedRollNo, branch;
             getline(ss, storedName, ','); 
-            ss.ignore(numeric_limits<streamsize>::max(), ','); 
+            // ss.ignore(numeric_limits<streamsize>::max(), ','); 
             getline(ss, storedRollNo, ',');
-            ss.ignore(numeric_limits<streamsize>::max(), ','); 
+            // ss.ignore(numeric_limits<streamsize>::max(), ','); 
             getline(ss, branch, ',');
             cout << "Name: " << storedName << " | Roll No: " << storedRollNo << " | Branch: " << branch << endl;
         }
