@@ -1,0 +1,3 @@
+Mr. Tom Black,tom.black@example.com,M,empID001,password001,Dean
+Ms. Laura King,laura.king@example.com,F,empID002,password002,Registrar
+Mr. John Carter,john.carter@example.com,M,empID003,password003,Principal
