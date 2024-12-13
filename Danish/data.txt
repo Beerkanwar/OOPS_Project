@@ -1,0 +1,10 @@
+# Authority
+ath_459 | Gurkaranbir | Karan007
+
+# Students
+11A_001 | Alice | studentPass1 | 0
+11A_002 | Bob | studentPass2 | 0
+
+# Teachers
+TCH_101 | Mr. Smith | teacherPass1
+TCH_102 | Mrs. Jane | teacherPass2
