@@ -40,38 +40,55 @@ public:
     }
 
     // Static method to calculate total hours in class
-    static void calculateTotalHoursInClass() {
-        ifstream attendanceFile("attendance_entries.txt");
-        if (!attendanceFile.is_open()) {
-            cerr << "Error: Could not open 'attendance_entries.txt'.\n";
-            return;
-        }
+  static time_t convertToTimeT(const string& dateStr) {
+    struct tm timeStruct = {};
+    istringstream ss(dateStr);
+    ss >> get_time(&timeStruct, "%a %b %d %H:%M:%S %Y");
+    if (ss.fail()) {
+        cerr << "Error: Failed to parse date string: " << dateStr << endl;
+        return 0;
+    }
+    return mktime(&timeStruct);
+}
 
-        string line, uniqueId, dateStr;
-        map<string, double> totalHours;
-        map<string, time_t> lastInTime;
+// Function to calculate total hours spent in class
+static void calculateTotalHoursInClass() {
+    ifstream attendanceFile("attendance_entries.txt");
+    if (!attendanceFile.is_open()) {
+        cerr << "Error: Could not open 'attendance_entries.txt'.\n";
+        return;
+    }
 
-        while (getline(attendanceFile, line)) {
-            istringstream iss(line);
-            if (!(iss >> uniqueId)) continue;
-            getline(iss, dateStr);
-            time_t currentTime = convertToTimeT(dateStr);
+    string line, uniqueId, dateStr;
+    map<string, double> totalHours;
+    map<string, time_t> lastInTime;
 
-            if (lastInTime.count(uniqueId) == 0) {
-                lastInTime[uniqueId] = currentTime;
-            } else {
-                double timeSpent = difftime(currentTime, lastInTime[uniqueId]) / 3600.0;
-                totalHours[uniqueId] += timeSpent;
-                lastInTime.erase(uniqueId);
-            }
-        }
-        attendanceFile.close();
+    while (getline(attendanceFile, line)) {
+        istringstream iss(line);
+        if (!(iss >> uniqueId)) continue; // Extract unique ID
+        getline(iss, dateStr);            // Extract timestamp
+        time_t currentTime = convertToTimeT(dateStr);
 
-        cout << "Total hours spent in class:\n";
-        for (const auto& entry : totalHours) {
-            cout << "ID: " << entry.first << ", Hours: " << entry.second << " hours\n";
+        if (currentTime == 0) continue;   // Skip invalid timestamps
+
+        if (lastInTime.count(uniqueId) == 0) {
+            // First entry for this ID
+            lastInTime[uniqueId] = currentTime;
+        } else {
+            // Calculate time spent and accumulate hours
+            double timeSpent = difftime(currentTime, lastInTime[uniqueId]) / 3600.0;
+            totalHours[uniqueId] += timeSpent;
+            lastInTime.erase(uniqueId); // Remove entry after calculating
         }
     }
+    attendanceFile.close();
+
+    // Display total hours
+    cout << "Total hours spent in class:\n";
+    for (const auto& entry : totalHours) {
+        cout << "ID: " << entry.first << ", Hours: " << entry.second << " hours\n";
+    }
+}
 
 protected:
     string name, dob, email, gender, password;
@@ -93,12 +110,9 @@ private:
     }
 
     // Static helper function to convert string date to time_t
-    static time_t convertToTimeT(const string& timeStr) {
-        struct tm tm{};
-        istringstream ss(timeStr);
-        ss >> get_time(&tm, "%a %b %d %H:%M:%S %Y");
-        return mktime(&tm);
-    }
+
+
+
 };
 
 // Derived class Student
@@ -193,6 +207,7 @@ int main() {
 
         cout << "Enter the Employee Id: ";
         cin >> emp_id;
+        if(emp_id == "exit") break;
         cout << "Enter password: ";
         cin >> password;
 
@@ -209,12 +224,15 @@ int main() {
             cin >> choice;
 
             if (choice == 1) {
-                string roll_no;
-                cout << "Enter Roll No: ";
-                cin >> roll_no;
-
-                auto student = Student::search(roll_no);
-                
+                while(true){
+                    string roll_no;
+                    cout << "Enter Roll No: ";
+                    cin >> roll_no;
+                    if(roll_no == "exit") break;
+                    bool valid = Student::search(roll_no);
+                    if(!valid) cout<<"Invalid ID\n";
+                    else Person::logAttendance(roll_no);
+                }
             } else if (choice == 2) {
                 Person::calculateTotalHoursInClass();
             } else if (choice == 3) {
