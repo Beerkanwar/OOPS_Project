@@ -109,23 +109,20 @@ public:
 
     string getUniqueID() const override { return rollNo; }
 
-    static unique_ptr<Student> search(const string& rollNo) {
-        ifstream file("student_data.txt");
+   static bool search(const string& rollNo) {
+        ifstream file("data.txt");
         if (!file.is_open()) {
             cerr << "Error: Could not open 'student_data.txt'.\n";
-            return nullptr;
+            return false;
         }
 
         string line;
         while (getline(file, line)) {
-            istringstream iss(line);
-            string storedRollNo, name, dob, email, gender, classSection, password;
-            iss >> storedRollNo >> name >> dob >> email >> gender >> classSection >> password;
-            if (storedRollNo == rollNo) {
-                return make_unique<Student>(name, dob, email, gender, storedRollNo, classSection, password);
-            }
+            int res = line.find(rollNo);
+            if (res != string::npos)
+                return true;
         }
-        return nullptr;
+        return false;
     }
 
 private:
@@ -217,11 +214,7 @@ int main() {
                 cin >> roll_no;
 
                 auto student = Student::search(roll_no);
-                if (student) {
-                    Person::logAttendance(student->getUniqueID());
-                } else {
-                    cout << "Invalid Roll No!\n";
-                }
+                
             } else if (choice == 2) {
                 Person::calculateTotalHoursInClass();
             } else if (choice == 3) {
