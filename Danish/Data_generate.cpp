@@ -27,17 +27,15 @@ void createDataFile() {
     cin >> authorityPassword;
 
     dataFile << "# Authority\n";
-    dataFile << authorityId << " | " << authorityName << " | " << authorityPassword << "\n";
+    dataFile << authorityId << "|" << authorityName << "|" << authorityPassword << "\n";
 
     // Add placeholder data for students
     dataFile << "\n# Students\n";
-    dataFile << "11A_001 | Alice | studentPass1 | 0\n";
-    dataFile << "11A_002 | Bob | studentPass2 | 0\n";
+    dataFile << "11A_001|Alice|studentPass1|0\n";
+    dataFile << "11A_002|Bob|studentPass2|0\n";
 
     // Add placeholder data for teachers
-    dataFile << "\n# Teachers\n";
-    dataFile << "TCH_101 | Mr. Smith | teacherPass1\n";
-    dataFile << "TCH_102 | Mrs. Jane | teacherPass2\n";
+
 
     dataFile.close();
     cout << "File 'data.txt' created successfully.\n";

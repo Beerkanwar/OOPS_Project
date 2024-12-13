@@ -6,15 +6,16 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "Project.cpp"
+#include <memory>
+#include <algorithm>
 
 using namespace std;
 
 // Base class Person
 class Person {
 public:
-    Person(string name, string dob, string email, string gender)
-        : name(name), dob(dob), email(email), gender(gender) {}
+    Person(string name, string dob, string email, string gender, string password)
+        : name(name), dob(dob), email(email), gender(gender), password(password) {}
 
     virtual ~Person() = default;
     virtual string getUniqueID() const = 0;
@@ -25,7 +26,13 @@ public:
             cout << "Error: Unique ID not found.\n";
             return;
         }
+
         ofstream attendanceFile("attendance_entries.txt", ios::app);
+        if (!attendanceFile.is_open()) {
+            cerr << "Error: Could not open 'attendance_entries.txt' for writing.\n";
+            return;
+        }
+
         time_t now = time(0);
         attendanceFile << uniqueId << " " << ctime(&now);
         attendanceFile.close();
@@ -35,6 +42,11 @@ public:
     // Static method to calculate total hours in class
     static void calculateTotalHoursInClass() {
         ifstream attendanceFile("attendance_entries.txt");
+        if (!attendanceFile.is_open()) {
+            cerr << "Error: Could not open 'attendance_entries.txt'.\n";
+            return;
+        }
+
         string line, uniqueId, dateStr;
         map<string, double> totalHours;
         map<string, time_t> lastInTime;
@@ -62,12 +74,17 @@ public:
     }
 
 protected:
-    string name, dob, email, gender;
+    string name, dob, email, gender, password;
 
 private:
     // Static helper function to check if unique ID is valid
     static bool isValidID(const string& uniqueId) {
         ifstream idFile("unique_ids.txt");
+        if (!idFile.is_open()) {
+            cerr << "Error: Could not open 'unique_ids.txt'.\n";
+            return false;
+        }
+
         string id;
         while (getline(idFile, id)) {
             if (id == uniqueId) return true;
@@ -88,80 +105,106 @@ private:
 class Student : public Person {
 public:
     Student(string name, string dob, string email, string gender, string rollNo, string classSection, string password)
-        : Person(name, dob, email, gender), rollNo(rollNo), classSection(classSection), password(password) {}
+        : Person(name, dob, email, gender, password), rollNo(rollNo), classSection(classSection) {}
 
     string getUniqueID() const override { return rollNo; }
 
-    static Student* search(const string& rollNo) {
-        // Placeholder for actual search logic.
-        return nullptr; // Replace with actual implementation
+    static unique_ptr<Student> search(const string& rollNo) {
+        ifstream file("student_data.txt");
+        if (!file.is_open()) {
+            cerr << "Error: Could not open 'student_data.txt'.\n";
+            return nullptr;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            istringstream iss(line);
+            string storedRollNo, name, dob, email, gender, classSection, password;
+            iss >> storedRollNo >> name >> dob >> email >> gender >> classSection >> password;
+            if (storedRollNo == rollNo) {
+                return make_unique<Student>(name, dob, email, gender, storedRollNo, classSection, password);
+            }
+        }
+        return nullptr;
     }
 
 private:
-    string rollNo, classSection, password;
-    friend class Authority;
-};
-
-// Derived class Teacher
-class Teacher : public Person {
-public:
-    Teacher(string name, string dob, string email, string gender, string empId, string password, vector<string> classes)
-        : Person(name, dob, email, gender), empId(empId), password(password), classes(classes) {}
-
-    string getUniqueID() const override { return empId; }
-
-protected:
-    string empId, password;
-    vector<string> classes;
+    string rollNo, classSection;
 };
 
 // Derived class Authority
-class Authority : public Teacher {
+class Authority : public Person {
 public:
-    Authority(string name, string dob, string email, string gender, string empId, string password, vector<string> classes, string post)
-        : Teacher(name, dob, email, gender, empId, password, classes), post(post) {}
+    Authority(string name, string dob, string email, string gender, string empId, string password)
+        : Person(name, dob, email, gender, password), empId(empId) {}
 
-    static Authority* search(const string& empId) {
-        // Placeholder for actual search logic.
-        return nullptr; // Replace with actual implementation
+    string getUniqueID() const override { return empId; }
+
+   static bool checkAuthorityCredentials(const string& emp_id, const string& password) {
+    ifstream file("data.txt");
+    if (!file.is_open()) {
+        cerr << "Error: Could not open 'data.txt'. Make sure the file exists.\n";
+        return false;
     }
 
-    bool check_password(const string& inputPassword) const {
-        return password == inputPassword; // Replace with hashed password check
+    string line;
+    bool isAuthoritySection = false;
+
+    while (getline(file, line)) {
+        // Check if we've reached the "# Authority" section
+        if (line.find("# Authority") != string::npos) {
+            isAuthoritySection = true;
+            continue;
+        }
+
+        // Process only lines in the Authority section
+        if (isAuthoritySection && !line.empty()) {
+            stringstream ss(line);
+            string file_emp_id, file_name, file_password;
+
+            // Parse the line using '|' as a delimiter
+            if (!getline(ss, file_emp_id, '|') || !getline(ss, file_name, '|') || !getline(ss, file_password, '|')) {
+                cerr << "Error: Malformed line in 'data.txt': " << line << "\n";
+                continue;
+            }
+
+            // Trim whitespace from parsed values
+            file_emp_id.erase(file_emp_id.find_last_not_of(" \t") + 1);
+            file_password.erase(file_password.find_last_not_of(" \t") + 1);
+
+            // Debugging logs (can be commented out in production)
+            cout << "Checking credentials: " << file_emp_id << " " << file_password << "\n";
+
+            // Validate the credentials
+            if (file_emp_id == emp_id && file_password == password) {
+                return true;
+            }
+        }
     }
+
+    return false;
+}
+
 
 private:
-    string post;
+    string empId;
 };
-
-// Function to generate the unique ID list file for testing purposes
-void generateUniqueIDList() {
-    ofstream idFile("unique_ids.txt");
-    idFile << "# Students (Roll Numbers)\n11A_001\n11A_002\n11B_001\n11B_002\n12A_001\n12A_002\n";
-    idFile << "# Teachers (Employee IDs)\nTCH_101\nTCH_102\n";
-    idFile << "# Authority (Employee IDs)\nAUTH_201\n";
-    idFile.close();
-    cout << "Unique ID list generated in 'unique_ids.txt'.\n";
-}
 
 int main() {
     while (true) {
         string emp_id, password;
 
-        // Login prompt
         cout << "Enter the Employee Id: ";
         cin >> emp_id;
         cout << "Enter password: ";
         cin >> password;
 
-        // Search and validate authority user
-        Authority* a1 = Authority::search(emp_id); // Assume Authority::search fetches Authority object
-        if (!a1 || !a1->check_password(password)) {
-            cout << "Incorrect Id or Password!" << endl;
+        if (!Authority::checkAuthorityCredentials(emp_id, password)) {
+            cout << "Incorrect Id or Password!\n";
             continue;
         }
 
-        cout << "Login successful!" << endl;
+        cout << "Login successful!\n";
 
         while (true) {
             int choice;
@@ -169,58 +212,23 @@ int main() {
             cin >> choice;
 
             if (choice == 1) {
-                // Attendance system
-                time_t t = time(nullptr);
-                tm* now = localtime(&t);
-                ostringstream oss;
-                oss << (now->tm_year + 1900) << '-' 
-                    << setw(2) << setfill('0') << (now->tm_mon + 1) << '-' 
-                    << setw(2) << setfill('0') << now->tm_mday;
-                string fileName = oss.str() + ".txt";
+                string roll_no;
+                cout << "Enter Roll No: ";
+                cin >> roll_no;
 
-                ofstream file(fileName, ios::app);
-                if (!file.is_open()) {
-                    cerr << "Failed to create or open the file: " << fileName << endl;
-                    break;
+                auto student = Student::search(roll_no);
+                if (student) {
+                    Person::logAttendance(student->getUniqueID());
+                } else {
+                    cout << "Invalid Roll No!\n";
                 }
-
-                while (true) {
-                    string roll_no;
-                    cout << "Enter Roll No (or -1 to exit): ";
-                    cin >> roll_no;
-
-                    if (roll_no == "-1") {
-                        break;
-                    }
-
-                    // Validate roll number
-                    Student* student = Student::search(roll_no); // Assume Student::search fetches Student object
-                    if (student) {
-                        time_t now = time(0);
-                        tm* ltm = localtime(&now);
-
-                        ostringstream timeStream;
-                        timeStream << setw(2) << setfill('0') << ltm->tm_hour << ":"
-                                   << setw(2) << setfill('0') << ltm->tm_min << ":"
-                                   << setw(2) << setfill('0') << ltm->tm_sec;
-
-                        file << "Roll No: " << roll_no << ", Time: " << timeStream.str() << endl;
-                        cout << "Attendance recorded for Roll No: " << roll_no << " at " << timeStream.str() << endl;
-                    } else {
-                        cout << "Invalid Roll No!" << endl;
-                    }
-                }
-
-                file.close();
             } else if (choice == 2) {
-                // Calculate total hours
                 Person::calculateTotalHoursInClass();
             } else if (choice == 3) {
-                // Logout
                 cout << "Logging out...\n";
                 break;
             } else {
-                cout << "Invalid choice!" << endl;
+                cout << "Invalid choice!\n";
             }
         }
     }
