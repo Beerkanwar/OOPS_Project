@@ -12,7 +12,6 @@ void createDataFile()
         cerr << "Error: Unable to create file 'data.txt'.\n";
         return;
     }
-
     // Add authority's details
     cout << "Enter Authority ID: ";
     string authorityId;
@@ -32,10 +31,25 @@ void createDataFile()
 
     // Add placeholder data for students
     dataFile << "\n# Students\n";
-    dataFile << "11A_001|Alice|studentPass1|0\n";
-    dataFile << "11A_002|Bob|studentPass2|0\n";
+    cout << "Enter number of students: ";
+    int numStudents;
+    cin >> numStudents;
 
-    // Add placeholder data for teachers
+    for (int i = 0; i < numStudents; ++i)
+    {
+        string rollNo, studentName, studentPassword;
+        cout << "Enter Roll No for Student " << (i + 1) << ": ";
+        cin >> rollNo;
+
+        cout << "Enter Name for Student " << (i + 1) << ": ";
+        cin.ignore(); // Ignore any leftover newline character
+        getline(cin, studentName);
+
+        cout << "Enter Password for Student " << (i + 1) << ": ";
+        cin >> studentPassword;
+
+        dataFile << rollNo << "|" << studentName << "|" << studentPassword << "|0\n";
+    }
 
     dataFile.close();
     cout << "File 'data.txt' created successfully.\n";

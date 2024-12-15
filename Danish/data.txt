@@ -1,6 +1,17 @@
 # Authority
 auth_101|Gurkaranbir|Karan007
+auth_102|Rohit|Rohit123
+auth_103|Sneha|Sneha456
+auth_104|Vikram|Vikram789
 
 # Students
 11A_001|Alice|studentPass1|0
 11A_002|Bob|studentPass2|0
+11A_003|Priya|studentPass3|0
+11A_004|Rahul|studentPass4|0
+11A_005|Neha|studentPass5|0
+11A_006|Amit|studentPass6|0
+11A_007|Sita|studentPass7|0
+11A_008|Karan|studentPass8|0
+11A_009|Anjali|studentPass9|0
+11A_010|Ravi|studentPass10|0
