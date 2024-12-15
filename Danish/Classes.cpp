@@ -8,6 +8,8 @@
 #include <vector>
 #include <memory>
 #include <chrono>
+#include <ctime>
+#include <windows.h>
 #include <algorithm>
 using namespace std;
 
@@ -101,6 +103,7 @@ public:
             {
                 // Calculate time spent and accumulate hours
                 double timeSpent = difftime(currentTime, lastInTime[uniqueId]) / 3600.0;
+                if(timeSpent < 0.5) timeSpent = 0;
                 totalHours[uniqueId] += timeSpent;
                 lastInTime.erase(uniqueId); // Remove entry after calculating
             }
