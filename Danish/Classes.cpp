@@ -217,7 +217,7 @@ public:
                 // Parse the line using '|' as a delimiter
                 if (!getline(ss, file_emp_id, '|') || !getline(ss, file_name, '|') || !getline(ss, file_password, '|'))
                 {
-                    cerr << "Error: Malformed line in 'data.txt': " << line << "\n";
+                    cerr << "Error: Malformed line in 'data.txt'\n";
                     continue;
                 }
 
@@ -226,7 +226,7 @@ public:
                 file_password.erase(file_password.find_last_not_of(" \t") + 1);
 
                 // Debugging logs (can be commented out in production)
-                cout << "Checking credentials: " << file_emp_id << " " << file_password << "\n";
+                // cout << "Checking credentials: " << file_emp_id << " " << file_password << "\n";
 
                 // Validate the credentials
                 if (file_emp_id == emp_id && file_password == password)
