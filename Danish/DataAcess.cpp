@@ -1,5 +1,4 @@
 #include"Classes.cpp"
-// Write a program that allows an authority figure to access student attendence data for any date.
 
 main() {
     string emp_id, password;
