@@ -5,9 +5,11 @@
 using namespace std;
 
 // Function to create the data file
-void createDataFile() {
+void createDataFile()
+{
     ofstream dataFile("data.txt");
-    if (!dataFile.is_open()) {
+    if (!dataFile.is_open())
+    {
         cerr << "Error: Unable to create file 'data.txt'.\n";
         return;
     }
@@ -36,12 +38,12 @@ void createDataFile() {
 
     // Add placeholder data for teachers
 
-
     dataFile.close();
     cout << "File 'data.txt' created successfully.\n";
 }
 
-int main() {
+int main()
+{
     createDataFile();
     return 0;
 }
