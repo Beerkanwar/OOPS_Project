@@ -7,9 +7,18 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include <chrono>
 #include <algorithm>
-
 using namespace std;
+
+string getCurrentDate() {
+    auto now = chrono::system_clock::now();
+    time_t now_c = chrono::system_clock::to_time_t(now);
+    tm* now_tm = localtime(&now_c);
+    ostringstream oss;
+    oss << put_time(now_tm, "%Y-%m-%d");
+    return oss.str();
+}
 
 // Base class Person
 class Person
@@ -29,8 +38,9 @@ public:
             cout << "Error: Unique ID not found.\n";
             return;
         }
-
-        ofstream attendanceFile("attendance_entries.txt", ios::app);
+        // Save attendence entries in a new file everyday (file made day by day)
+        string fileName = "attendance_entries_" + getCurrentDate() + ".txt";
+        ofstream attendanceFile(fileName, ios::app);
         if (!attendanceFile.is_open())
         {
             cerr << "Error: Could not open 'attendance_entries.txt' for writing.\n";
@@ -60,7 +70,8 @@ public:
     // Function to calculate total hours spent in class
     static void calculateTotalHoursInClass()
     {
-        ifstream attendanceFile("attendance_entries.txt");
+        string fileName = "attendance_entries_" + getCurrentDate() + ".txt";
+        ifstream attendanceFile(fileName);
         if (!attendanceFile.is_open())
         {
             cerr << "Error: Could not open 'attendance_entries.txt'.\n";
