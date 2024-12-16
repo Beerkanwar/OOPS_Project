@@ -19,7 +19,6 @@ int main()
         cout << "Login successful!\n";
         Sleep(1000);
         system("cls");
-
         while (true)
         {
             int choice;
@@ -30,7 +29,6 @@ int main()
                 cin.ignore(numeric_limits<streamsize>::max(),'\n');
                 choice = 0;
             }
-
             if (choice == 1)
             {
                 while (true)
@@ -72,6 +70,5 @@ int main()
             system("cls");
         }
     }
-
     return 0;
 }
