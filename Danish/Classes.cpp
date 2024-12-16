@@ -119,6 +119,9 @@ public:
         }
     }
 
+    friend ostream& operator<<(ostream& os, const Person& p);
+    friend istream& operator>>(istream& is, Person& p);
+
 protected:
     string name, dob, email, gender, password;
 
@@ -144,6 +147,16 @@ private:
 
     // Static helper function to convert string date to time_t
 };
+
+ostream& operator<<(ostream& os, const Person& p) {
+    os << p.name << " " << p.dob << " " << p.email << " " << p.gender;
+    return os;
+}
+
+istream& operator>>(istream& is, Person& p) {
+    is >> p.name >> p.dob >> p.email >> p.gender;
+    return is;
+}
 
 // Derived class Student
 class Student : public Person
@@ -174,9 +187,22 @@ public:
         return false;
     }
 
+    friend ostream& operator<<(ostream& os, const Student& s);
+    friend istream& operator>>(istream& is, Student& s);
+
 private:
     string rollNo, classSection;
 };
+
+ostream& operator<<(ostream& os, const Student& s) {
+    os << static_cast<const Person&>(s) << " " << s.rollNo << " " << s.classSection;
+    return os;
+}
+
+istream& operator>>(istream& is, Student& s) {
+    is >> static_cast<Person&>(s) >> s.rollNo >> s.classSection;
+    return is;
+}
 
 // Derived class Authority
 class Authority : public Person
@@ -240,6 +266,20 @@ public:
         return false;
     }
 
+    friend ostream& operator<<(ostream& os, const Authority& a);
+    friend istream& operator>>(istream& is, Authority& a);
+
 private:
     string empId;
 };
+
+ostream& operator<<(ostream& os, const Authority& a) {
+    os << static_cast<const Person&>(a) << " " << a.empId;
+    return os;
+}
+
+istream& operator>>(istream& is, Authority& a) {
+    is >> static_cast<Person&>(a) >> a.empId;
+    return is;
+}
+
