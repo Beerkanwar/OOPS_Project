@@ -10,6 +10,7 @@
 #include <chrono>
 #include <ctime>
 #include <windows.h>
+#include <cmath>
 #include <algorithm>
 using namespace std;
 
@@ -114,7 +115,7 @@ public:
         cout << "Total hours spent in class:\n";
         for (const auto &entry : totalHours)
         {
-            cout << "ID: " << entry.first << ", Hours: " << entry.second << " hours\n";
+            cout << "ID: " << entry.first << ", Hours: " << round(entry.second) << " hours\n";
         }
     }
 
